@@ -309,7 +309,6 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
   musselfouled_dat = dat |>
     dplyr::filter(MusselsFound_Ind == T)
 
-  browser()
   dat_select_columns = dat |>
     dplyr::select(Year,
            Watercraft_Risk_Assessment_ID,
