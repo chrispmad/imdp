@@ -1,0 +1,31 @@
+destination_name_abbreviator = function(x,y) {
+  if(stringr::str_detect(x[,y], "Ontario")) {x[,y] = "ON"}
+  if(stringr::str_detect(x[,y], "British")) {x[,y] = "BC"}
+  if(stringr::str_detect(x[,y], "Alberta")) {x[,y] = "AB"}
+  if(stringr::str_detect(x[,y], "Indiana")) {x[,y] = "IN"}
+  if(stringr::str_detect(x[,y], "Manitoba")) {x[,y] = "MB"}
+  if(stringr::str_detect(x[,y], "Washington")) {x[,y] = "WA"}
+  if(stringr::str_detect(x[,y], "Califor")) {x[,y] = "CA"}
+  if(stringr::str_detect(x[,y], "Sask")) {x[,y] = "SK"}
+  if(stringr::str_detect(x[,y], "Oregon")) {x[,y] = "OR"}
+  if(stringr::str_detect(x[,y], "Nova")) {x[,y] = "NS"}
+  if(stringr::str_detect(x[,y], "Montana")) {x[,y] = "MT"}
+  if(stringr::str_detect(x[,y], "Idaho")) {x[,y] = "ID"}
+  if(stringr::str_detect(x[,y], "Nebraska")) {x[,y] = "NE"}
+  if(stringr::str_detect(x[,y], "Colorado")) {x[,y] = "CO"}
+  if(stringr::str_detect(x[,y], "Minnesota")) {x[,y] = "MN"}
+  if(stringr::str_detect(x[,y], "Texas")) {x[,y] = "TX"}
+  if(stringr::str_detect(x[,y], "Alaska")) {x[,y] = "AK"}
+  if(stringr::str_detect(x[,y], "New York")) {x[,y] = "NY"}
+  if(stringr::str_detect(x[,y], "North Dakota")) {x[,y] = "ND"}
+  if(stringr::str_detect(x[,y], "Tennessee")) {x[,y] = "TN"}
+  if(stringr::str_detect(x[,y], "Michigan")) {x[,y] = "MI"}
+  if(stringr::str_detect(x[,y], "Nevada")) {x[,y] = "NV"}
+  if(stringr::str_detect(x[,y], "Florida")) {x[,y] = "FL"}
+  if(stringr::str_detect(x[,y], "Quebec")) {x[,y] = "QC"}
+  if(stringr::str_detect(x[,y], "South Dakota")) {x[,y] = "SD"}
+  if(stringr::str_detect(x[,y], "West Virginia")) {x[,y] = "WV"}
+  if(stringr::str_detect(x[,y], "Arizona")) {x[,y] = "AZ"}
+  if(stringr::str_detect(x[,y], "Wyoming")) {x[,y] = "WY"}
+  x
+}
