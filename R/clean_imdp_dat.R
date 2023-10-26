@@ -301,6 +301,11 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
     )) |>
     dplyr::rename(Previous_Waterbody_1_Province_Or_State = ABBR)
 
+  # I noticed that the field 'Number_Of_People_In_Party' should be made numeric
+  # and we should use floor() on it, since some rows have reported "2.34 people".
+  dat = dat |>
+    dplyr::mutate(Number_Of_People_In_Party = floor(as.numeric(Number_Of_People_In_Party)))
+
   #ii) backup of all high-risk boats.
   highrisk_dat = dat |>
     dplyr::filter(High_Risk_AIS_Ind == T)
