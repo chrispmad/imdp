@@ -70,7 +70,7 @@ figure_imdp_data_prep = function(
   abbrev = readxl::read_excel(paste0(my.external.data.folder,"Province_States_Abbreviation_Table.xlsx"))
 
   #Lookup table for named waterbodies in BC and which FLNRO fisheries region they can be found in.
-  flnro_lookup = readxl::read_excel(paste0(my.external.data.folder,"waterbody_name_flrno_region_lookup_table.xlsx")) |> distinct()
+  flnro_lookup = readxl::read_excel(paste0(my.external.data.folder,"waterbody_name_flrno_region_lookup_table.xlsx")) |> dplyr::distinct()
 
   #Lookup table for what the Previous Knowledge of AIS field's codes mean.
   ais_know = readxl::read_excel(paste0(my.external.data.folder,"Previous_Knowledge_of_AIS_lookup_table.xlsx"))
@@ -325,7 +325,7 @@ figure_imdp_data_prep = function(
 
   #This loop uses the BC geocoder to find the most likely coordinates
   # for each of the unique place names.
-  if(verbose) cat("\nGeocoding the city names containe in Destination Major City field.")
+  if(verbose) cat("\nGeocoding the city names contained in Destination Major City field.")
 
   suppressWarnings(
     for(i in 1:nrow(city_names_for_coords)){
@@ -353,10 +353,12 @@ figure_imdp_data_prep = function(
   #Find out which FLRNO region each of these city coords fall into.
   flnro_regions = sf::read_sf(paste0(my_opts$remote_spatial_data,"shared_data_sets/FLNRO_Fishing_Boundaries.shp"))
 
-  city_names_for_coords = city_names_for_coords |>
+  city_names_for_coords = suppressWarnings(
+    city_names_for_coords |>
     sf::st_as_sf(coords = c("lon","lat"), crs = 4326) |>
     sf::st_transform(crs = 3005) |>
     sf::st_join(flnro_regions, sf::st_intersects)
+  )
 
   #Join those coordinates to dat_all. For inspections with Unknown nearest city, those remain blank for lat and long.
   dat = suppressMessages(
