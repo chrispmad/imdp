@@ -218,6 +218,9 @@ figure_imdp_data_prep = function(
       sf::st_transform(crs = 4326) |>
       sf::st_centroid())
 
+  # Remove inspections by source centroid geopackage file manually (was erroring occasionally otherwise)
+  file.remove(paste0(this.years.report.folder,"data/spatial/Inspections_by_source_centroid.gpkg"))
+
   sf::write_sf(insp_by_source,
            paste0(this.years.report.folder,"data/spatial/Inspections_by_source_centroid.gpkg"))
   if(verbose) cat("\nInspections summarised by source state/prov centroid geopackage written to this year's report folder")

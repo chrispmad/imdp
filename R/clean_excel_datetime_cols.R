@@ -14,7 +14,8 @@ clean_excel_datetime_cols = function(dat){
     dplyr::mutate(TimeOfInspection = stringr::str_replace_all(TimeOfInspection, " ([0-9]{2})(:[0-9]{2})$", " \\1\\2:00")) |>
     dplyr::mutate(TimeOfInspection = lubridate::ymd_hms(TimeOfInspection)) |>
     dplyr::mutate(dplyr::across(c(`Time of High Risk Inspection`,`Timestamp of inspection`,
-                    `Shift Start Time`,`Shift End Time`), \(x) lubridate::as_datetime(x)))
+                    `Shift Start Time`,`Shift End Time`), \(x) lubridate::as_datetime(x))) |>
+    dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
   dat[[2]] = dat[[2]] |>
     #A few of the timestamps quote 1970 as their year of entry! Crazy. Replace with
@@ -37,7 +38,8 @@ clean_excel_datetime_cols = function(dat){
     dplyr::mutate(dplyr::across(c(`Date + Time of High Risk Inspection`,`Timestamp of inspection`,
                     `Shift Start Time`,`Shift End Time`), \(x) lubridate::as_datetime(x))) |>
     dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30")) |>
-    dplyr::filter(lubridate::year(TimeOfInspection) == 2016)
+    dplyr::filter(lubridate::year(TimeOfInspection) == 2016) |>
+    dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
   #When we have time of inspection (as opposed to just raw_timestamp), use that instead of raw timestamp.
   #We'll need to combine the hour/minute/second info from time of inspection with the date info from raw timestamp.
@@ -61,7 +63,8 @@ clean_excel_datetime_cols = function(dat){
     dplyr::select(-time_of_insp) |>
     dplyr::mutate(dplyr::across(c(`Date + Time of Inspection`,
                     shift_start,`Shift End Time`), \(x) openxlsx::convertToDateTime(as.numeric(x)))) |>
-    dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30"))
+    dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30")) |>
+    dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
   dat[[4]] = dat[[4]] |>
     dplyr::rename(time_of_insp = `Time of Inspection`,
@@ -83,7 +86,8 @@ clean_excel_datetime_cols = function(dat){
     dplyr::rename(TimeOfInspection = Timestamp) |>
     dplyr::select(-time_of_insp) |>
     dplyr::mutate(dplyr::across(c(shift_start,`Shift End Time`), \(x) openxlsx::convertToDateTime(as.numeric(x)))) |>
-    dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30"))
+    dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30"))  |>
+    dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
   dat[[5]] = dat[[5]] |>
     dplyr::rename(time_of_insp = `Time of Inspection`,
@@ -105,7 +109,8 @@ clean_excel_datetime_cols = function(dat){
     dplyr::rename(TimeOfInspection = Timestamp) |>
     dplyr::select(-time_of_insp) |>
     dplyr::mutate(dplyr::across(c(shift_start,`Shift End Time`), \(x) openxlsx::convertToDateTime(as.numeric(x)))) |>
-    dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30"))
+    dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`),origin = "1899-12-30")) |>
+    dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
   return(dat)
 }
