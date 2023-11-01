@@ -3,3 +3,4 @@
 export(figure_imdp_data_prep)
 export(general_imdp_data_prep)
 export(summarise_imdp_data_to_waterbodies)
+export(update_all_imdp_data)
