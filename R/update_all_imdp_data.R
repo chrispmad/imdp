@@ -13,10 +13,14 @@ update_all_imdp_data = function(
     dat = NULL,
     year = NULL,
     options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
-    verbose = T){
+    verbose = T,
+    update_spatial_files = T){
 
   general_imdp_data_prep()
 
   figure_imdp_data_prep()
 
+  if(update_spatial_files) {
+    summarise_imdp_data_to_waterbodies()
+  }
 }

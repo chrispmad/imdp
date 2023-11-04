@@ -293,6 +293,12 @@ summarise_imdp_data_to_waterbodies = function(
         sf::st_drop_geometry()
     )
 
+  # Drop NULL rows.
+  if(verbose) cat(paste0("\nAbout to drop NULL rows (n = ",nrow(wbs_with_dat |> dplyr::filter(is.na(TotalInspections))),")"))
+
+  wbs_with_dat = wbs_with_dat |>
+    dplyr::filter(!is.na(TotalInspections))
+
   sf::write_sf(wbs_with_dat, paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries.gpkg"))
 
   cat(paste0('Summarising of IMDP data to waterbodies completed at ',Sys.time()))
