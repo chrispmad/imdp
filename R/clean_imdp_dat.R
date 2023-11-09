@@ -57,8 +57,8 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
       stringr::str_detect(Station, "Penticton") ~ "Penticton Roving",
       stringr::str_detect(Station, "Valemount") ~ "Mt. Robson",
       stringr::str_detect(Station, "Salmo") ~ "Salmo",
-      stringr::str_detect(Station, "^Scheduled") ~ "Scheduled Inspection",
-      stringr::str_detect(Station, 'Sumas') ~ 'Fraser Valley Roving',
+      # stringr::str_detect(Station, "^Scheduled") ~ "Scheduled Inspection",
+      # stringr::str_detect(Station, 'Sumas') ~ 'Fraser Valley Roving',
       stringr::str_detect(Station, "Covid") ~ "COVID Border",
       stringr::str_detect(Station, "Okanagan") ~ "Okanagan",
       TRUE ~ Station)

@@ -9,7 +9,8 @@ update_all_imdp_data(
   year = NULL,
   options_filepath =
     "C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv",
-  verbose = T
+  verbose = T,
+  update_spatial_files = T
 )
 }
 \arguments{
