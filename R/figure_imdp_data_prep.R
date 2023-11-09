@@ -448,4 +448,6 @@ figure_imdp_data_prep = function(
   openxlsx::write.xlsx(dat, "./figure_dat_all.xlsx", overwrite = T)
   openxlsx::write.xlsx(dat_hr, "./figure_dat_hr.xlsx", overwrite = T)
   openxlsx::write.xlsx(dat_mf, "./figure_dat_mf.xlsx", overwrite = T)
+
+  readr::write_csv(dat, "./figure_dat_all.csv")
 }
