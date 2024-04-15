@@ -248,10 +248,14 @@ summarise_imdp_data_to_waterbodies = function(
         dplyr::summarise(NumberHighRisk = dplyr::n()) |>
         tidyr::pivot_wider(names_from = BoatType, values_from = NumberHighRisk,
                            names_prefix = "HR_", values_fill = 0)
-    ) |> dplyr::distinct() |>
+    ) |>
+    dplyr::distinct() |>
     dplyr::group_by(GNIS_NA, Closest_City) |>
     dplyr::summarise(dplyr::across(c(n,dplyr::ends_with("Counter")), \(x) sum(x,na.rm=T))) |>
-    dplyr::ungroup()
+    dplyr::ungroup() |>
+    # And add in two new little columns for HR: motorized or nonmotorized.
+    dplyr::mutate(HR_mot = HR_Simple_Counter + HR_Complex_Counter + HR_Very_Complex_Counter,
+                  HR_nonmot = HR_Non_Motorized_Counter)
   if(verbose) cat("\nIMDP inspection data, low and high risk inspections split into boat types...")
   # Turn the spatial object of waterbodies (merged) into a list,
   # split by name (each element has 1 or more elements, all with the same GNIS_NA name)
@@ -277,7 +281,7 @@ summarise_imdp_data_to_waterbodies = function(
     dplyr::distinct() |>
     # Summarise by waterbody name and subwatershed...
     dplyr::group_by(WATERSH,GNIS_NA) |>
-    dplyr::summarise(dplyr::across(c(n,dplyr::ends_with('Counter')), \(x) sum(x,na.rm=T))) |>
+    dplyr::summarise(dplyr::across(c(n,dplyr::ends_with('Counter'),HR_mot,HR_nonmot), \(x) sum(x,na.rm=T))) |>
     dplyr::ungroup() |>
     dplyr::rename(
       TotalInspections = n,
@@ -299,7 +303,96 @@ summarise_imdp_data_to_waterbodies = function(
   wbs_with_dat = wbs_with_dat |>
     dplyr::filter(!is.na(TotalInspections))
 
-  sf::write_sf(wbs_with_dat, paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries.gpkg"))
+  sf::write_sf(wbs_with_dat, paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_all_years.gpkg"))
+
+  # Do the same thing but for just this year's data...
+  dat_summ_split_types_this_year = dat_summ |>
+    dplyr::filter(Year == my_opts$year) |>
+    dplyr::full_join(
+      dat_join_w_coords |>
+        dplyr::filter(Year == my_opts$year) |>
+        sf::st_drop_geometry() |>
+        dplyr::mutate(dplyr::across(dplyr::ends_with("Counter"), as.numeric)) |>
+        dplyr::filter(!paste0(Year,Watercraft_Risk_Assessment_ID) %in%
+                        paste0(highrisk_dat$Year,
+                               highrisk_dat$Watercraft_Risk_Assessment_ID),
+                      !paste0(Year,Watercraft_Risk_Assessment_ID) %in%
+                        paste0(musselfouled_dat$Year,
+                               musselfouled_dat$Watercraft_Risk_Assessment_ID)) |>
+        tidyr::pivot_longer(dplyr::ends_with("Counter"),
+                            names_to = "BoatType", values_to = "BoatTypeNumber") |>
+        dplyr::mutate(BoatTypeNumber = replace(BoatTypeNumber, BoatTypeNumber > 1, 1)) |>
+        dplyr::filter(BoatTypeNumber > 0) |>
+        dplyr::group_by(Closest_City,GNIS_NA,Year,BoatType) |>
+        dplyr::summarise(TotalInsp = dplyr::n()) |>
+        tidyr::pivot_wider(names_from = BoatType, values_from = TotalInsp,
+                           names_prefix = "LowRisk_", values_fill = 0)
+    ) |>
+    #High-risk inspections, split into 4 categories of boat 'complexity'
+    dplyr::full_join(
+      dat_join_w_coords |>
+        dplyr::filter(Year == my_opts$year) |>
+        sf::st_drop_geometry() |>
+        dplyr::mutate(dplyr::across(dplyr::ends_with("Counter"), as.numeric)) |>
+        dplyr::filter(paste0(Year,Watercraft_Risk_Assessment_ID) %in%
+                        paste0(highrisk_dat$Year,
+                               highrisk_dat$Watercraft_Risk_Assessment_ID)) |>
+        tidyr::pivot_longer(dplyr::ends_with("Counter"),
+                            names_to = "BoatType", values_to = "BoatTypeNumber") |>
+        dplyr::mutate(BoatTypeNumber = replace(BoatTypeNumber, BoatTypeNumber > 1, 1)) |>
+        dplyr::filter(BoatTypeNumber > 0) |>
+        dplyr::group_by(Closest_City,GNIS_NA,Year,BoatType) |>
+        dplyr::summarise(NumberHighRisk = dplyr::n()) |>
+        tidyr::pivot_wider(names_from = BoatType, values_from = NumberHighRisk,
+                           names_prefix = "HR_", values_fill = 0)
+    ) |>
+    dplyr::distinct() |>
+    dplyr::group_by(GNIS_NA, Closest_City) |>
+    dplyr::summarise(dplyr::across(c(n,dplyr::ends_with("Counter")), \(x) sum(x,na.rm=T))) |>
+    dplyr::ungroup() |>
+    # And add in two new little columns for HR: motorized or nonmotorized.
+    dplyr::mutate(HR_mot = HR_Simple_Counter + HR_Complex_Counter + HR_Very_Complex_Counter,
+                  HR_nonmot = HR_Non_Motorized_Counter)
+
+  # For each element of the waterbodies list,
+  imdp_dat_with_watershed_this_year = lapply(
+    wbs_l, \(x)
+    # Join it spatially to the IMDP inspection data that list the same name in their destination field.
+    sf::st_join(
+      dat_summ_split_types_this_year[dat_summ_split_types_this_year$GNIS_NA == x$GNIS_NA,],
+      x,
+      sf::st_nearest_feature
+    ) |>
+      dplyr::filter(GNIS_NA.x == GNIS_NA.y) |>
+      dplyr::rename(GNIS_NA = GNIS_NA.x) |>
+      dplyr::select(-GNIS_NA.y)
+  ) |> dplyr::bind_rows() |>
+    dplyr::distinct() |>
+    # Summarise by waterbody name and subwatershed...
+    dplyr::group_by(WATERSH,GNIS_NA) |>
+    dplyr::summarise(dplyr::across(c(n,dplyr::ends_with('Counter'),HR_mot,HR_nonmot), \(x) sum(x,na.rm=T))) |>
+    dplyr::ungroup() |>
+    dplyr::rename(
+      TotalInspections = n,
+      NumberMusselFouled = msfouled_Counter
+    ) |>
+    dplyr::arrange(dplyr::desc(TotalInspections))
+
+  if(verbose) cat("\nSpatial match between waterbodies and IMDP inspection destination waterbodies complete.")
+
+  wbs_with_dat_this_year = wbs_m |>
+    dplyr::left_join(
+      imdp_dat_with_watershed_this_year |>
+        sf::st_drop_geometry()
+    )
+
+  # Drop NULL rows.
+  if(verbose) cat(paste0("\nAbout to drop NULL rows (n = ",nrow(wbs_with_dat |> dplyr::filter(is.na(TotalInspections))),")"))
+
+  wbs_with_dat_this_year = wbs_with_dat_this_year |>
+    dplyr::filter(!is.na(TotalInspections))
+
+  sf::write_sf(wbs_with_dat_this_year, paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values.gpkg'))
 
   cat(paste0('Summarising of IMDP data to waterbodies completed at ',Sys.time()))
 
