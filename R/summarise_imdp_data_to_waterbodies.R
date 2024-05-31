@@ -11,6 +11,7 @@
 #' @examples \dontrun
 summarise_imdp_data_to_waterbodies = function(
     dat = NULL,
+    year = NULL,
     options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
     redo_geocoding = F,
     verbose = T){
@@ -33,12 +34,14 @@ summarise_imdp_data_to_waterbodies = function(
   )
 
 
-  # #Which year should we focus on?
-  # if(is.null(year)){
-  #   report.year = max(dat$Year)
-  # } else {
-  #   report.year = year
-  # }
+  #Which year should we focus on?
+  # If user doesn't input a year, will use the most recent year for which we
+  # have inspection records.
+  if(is.null(year)){
+    report.year = max(dat$Year)
+  } else {
+    report.year = year
+  }
 
   #Data folders
   my.data.folder = paste0(my_opts$zqm_figure_local_folder,"data/")
@@ -349,8 +352,17 @@ summarise_imdp_data_to_waterbodies = function(
     dplyr::distinct() |>
     dplyr::group_by(GNIS_NA, Closest_City) |>
     dplyr::summarise(dplyr::across(c(n,dplyr::ends_with("Counter")), \(x) sum(x,na.rm=T))) |>
-    dplyr::ungroup() |>
+    dplyr::ungroup()
+
+  # In case there are not enough HR inspections to populate the 4 complexity types,
+  # add those columns in here.
+  if(!"HR_Simple_Counter" %in% names(dat_summ_split_types_this_year)) { dat_summ_split_types_this_year$HR_Simple_Counter = 0 }
+  if(!"HR_Complex_Counter" %in% names(dat_summ_split_types_this_year)) { dat_summ_split_types_this_year$HR_Complex_Counter = 0 }
+  if(!"HR_Very_Complex_Counter" %in% names(dat_summ_split_types_this_year)) { dat_summ_split_types_this_year$HR_Very_Complex_Counter = 0 }
+  if(!"HR_Non_Motorized_Counter" %in% names(dat_summ_split_types_this_year)) { dat_summ_split_types_this_year$HR_Non_Motorized_Counter = 0 }
+
     # And add in two new little columns for HR: motorized or nonmotorized.
+  dat_summ_split_types_this_year = dat_summ_split_types_this_year |>
     dplyr::mutate(HR_mot = HR_Simple_Counter + HR_Complex_Counter + HR_Very_Complex_Counter,
                   HR_nonmot = HR_Non_Motorized_Counter)
 
