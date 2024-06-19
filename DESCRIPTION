@@ -1,6 +1,6 @@
 Package: imdp
 Title: Consolidate and filter Invasive Mussel Defence Program data
-Version: 1
+Version: 0.0.0.9
 Authors@R: 
     person("Chris", "Madsen", , "chris.madsen@gov.bc.ca", role = c("aut", "cre", "cph"))
 Description: This package simplifies the workflow that I have used for several years to combine, clean and format Invasive Mussel Defence Program data.
