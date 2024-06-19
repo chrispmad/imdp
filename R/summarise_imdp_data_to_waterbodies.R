@@ -1,6 +1,9 @@
 #' Title Perform the long-winded process of joining IMDP inspection data to waterbodies.
 #'
 #' @param dat This should be the cleaned data output from the 'general_imdp_data_prep' function; i.e. a file named 'WatercraftInspectionData_AllYears_Selected_Columns.xlsx'. If NULL, will search J: LAN folder for data file.
+#' @param year Limit this summary to a specific year.
+#' @param data_filter Restrict the data feeding into this summary with a list of length two: the first element in the field to filter on, the second element is the list of acceptable values.
+#' @param data_filter_preset Preset options for data filters; currently includes 'WD_infected_areas' for Whirling Disease.
 #' @param options_filepath Filepath to 'my_opts.csv' file on local machine.
 #' @param verbose Return copious feedback?
 #' @param redo_geocoding Shall we redo the time-intensive geocoding of closest cities? This takes about 20 minutes.
@@ -12,6 +15,8 @@
 summarise_imdp_data_to_waterbodies = function(
     dat = NULL,
     year = NULL,
+    data_filter = NULL,
+    data_filter_preset = NULL,
     options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
     redo_geocoding = F,
     verbose = T){
@@ -33,7 +38,6 @@ summarise_imdp_data_to_waterbodies = function(
     }
   )
 
-
   #Which year should we focus on?
   # If user doesn't input a year, will use the most recent year for which we
   # have inspection records.
@@ -41,6 +45,23 @@ summarise_imdp_data_to_waterbodies = function(
     report.year = max(dat$Year)
   } else {
     report.year = year
+  }
+
+  # A data limit filter has been applied; coalesce likely boat source province / state
+  # and drop records for boats outside the list of acceptable values.
+  if(!is.null(data_filter_preset)){
+    if(data_filter_preset == 'WD_infected_areas'){
+      data_filter = list(field = 'Previous_Waterbody_1_Province_Or_State',
+                        values = c("WA","OR","CA","NV","ID","MT","WY","CO","UT","AZ","NM","NE",
+                                   "MI","OH","WV","VA","NC","PA","NY","VT","NH","MA","RI","CT","NJ","DE","MC","DC",
+                                   "AB"))
+    }
+  }
+
+  # Apply data limit
+  if(!is.null(data_filter)){
+    dat = dat |>
+      dplyr::filter(!!rlang::sym(data_filter$field) %in% data_filter$values)
   }
 
   #Data folders
@@ -306,7 +327,21 @@ summarise_imdp_data_to_waterbodies = function(
   wbs_with_dat = wbs_with_dat |>
     dplyr::filter(!is.na(TotalInspections))
 
-  sf::write_sf(wbs_with_dat, paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_all_years.gpkg"))
+  name_for_spatial_file_all_records = "Waterbodies_with_Inspection_Data_Summaries_all_years.gpkg"
+
+  # Has some data filter been introduced? If so, reflect that in the file name.
+  if(!is.null(data_filter)){
+    name_for_spatial_file_all_records = paste0("Waterbodies_with_Inspection_Data_Summaries_all_years_",data_filter$field,"_filtered.gpkg")
+  }
+  # And if one of the preset data filters has been used, reference that directly.
+  if(!is.null(data_filter_preset)){
+    if(data_filter_preset == 'WD_infected_areas'){
+      name_for_spatial_file_all_records = paste0("Waterbodies_with_Inspection_Data_Summaries_all_years_WD_Infected_Areas.gpkg")
+    }
+  }
+
+  # Write out to disk!
+  sf::write_sf(wbs_with_dat, paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/",name_for_spatial_file_all_records))
 
   # Do the same thing but for just this year's data...
   dat_summ_split_types_this_year = dat_summ |>
@@ -404,7 +439,21 @@ summarise_imdp_data_to_waterbodies = function(
   wbs_with_dat_this_year = wbs_with_dat_this_year |>
     dplyr::filter(!is.na(TotalInspections))
 
-  sf::write_sf(wbs_with_dat_this_year, paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values.gpkg'))
+  # Set up name for file.
+  name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values.gpkg')
+
+  # Has some data filter been introduced? If so, reflect that in the file name.
+  if(!is.null(data_filter)){
+    name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_',data_filter$field,'_filtered.gpkg')
+  }
+  # And if one of the preset data filters has been used, reference that directly.
+  if(!is.null(data_filter_preset)){
+    if(data_filter_preset == 'WD_infected_areas'){
+      name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_WD_Infected_Areas.gpkg')
+    }
+  }
+
+  sf::write_sf(wbs_with_dat_this_year, name_for_spatial_file_year_records)
 
   cat(paste0('Summarising of IMDP data to waterbodies completed at ',Sys.time()))
 
