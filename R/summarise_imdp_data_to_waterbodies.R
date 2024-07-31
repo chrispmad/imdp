@@ -440,16 +440,19 @@ summarise_imdp_data_to_waterbodies = function(
     dplyr::filter(!is.na(TotalInspections))
 
   # Set up name for file.
-  name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values.gpkg')
+  name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_",unique(wbs_with_dat_this_year$Year),".gpkg")
+  # name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values.gpkg')
 
   # Has some data filter been introduced? If so, reflect that in the file name.
   if(!is.null(data_filter)){
-    name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_',data_filter$field,'_filtered.gpkg')
+    # name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_',data_filter$field,'_filtered.gpkg')
+    name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_",unique(wbs_with_dat_this_year$Year),"_",data_filter$field,"_filtered.gpkg")
   }
   # And if one of the preset data filters has been used, reference that directly.
   if(!is.null(data_filter_preset)){
     if(data_filter_preset == 'WD_infected_areas'){
-      name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_WD_Infected_Areas.gpkg')
+      # name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_WD_Infected_Areas.gpkg')
+      name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_",unique(wbs_with_dat_this_year$Year),"_WD_Infected_Areas.gpkg")
     }
   }
 
