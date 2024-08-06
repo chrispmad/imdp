@@ -38,11 +38,17 @@ summarise_imdp_data_to_waterbodies = function(
     }
   )
 
-  #Which year should we focus on?
-  # If user doesn't input a year, will use the most recent year for which we
-  # have inspection records.
+  # #Which year should we focus on?
+  # # If user doesn't input a year, will use the most recent year for which we
+  # # have inspection records.
+  # if(is.null(year)){
+  #   report.year = max(dat$Year)
+  # } else {
+  #   report.year = year
+  # }
+  # If user doesn't input a year, consult options for which year to focus on.
   if(is.null(year)){
-    report.year = max(dat$Year)
+    report.year = my_opts$year
   } else {
     report.year = year
   }
@@ -345,10 +351,10 @@ summarise_imdp_data_to_waterbodies = function(
 
   # Do the same thing but for just this year's data...
   dat_summ_split_types_this_year = dat_summ |>
-    dplyr::filter(Year == my_opts$year) |>
+    dplyr::filter(Year == report.year) |>
     dplyr::full_join(
       dat_join_w_coords |>
-        dplyr::filter(Year == my_opts$year) |>
+        dplyr::filter(Year == report.year) |>
         sf::st_drop_geometry() |>
         dplyr::mutate(dplyr::across(dplyr::ends_with("Counter"), as.numeric)) |>
         dplyr::filter(!paste0(Year,Watercraft_Risk_Assessment_ID) %in%
@@ -369,7 +375,7 @@ summarise_imdp_data_to_waterbodies = function(
     #High-risk inspections, split into 4 categories of boat 'complexity'
     dplyr::full_join(
       dat_join_w_coords |>
-        dplyr::filter(Year == my_opts$year) |>
+        dplyr::filter(Year == report.year) |>
         sf::st_drop_geometry() |>
         dplyr::mutate(dplyr::across(dplyr::ends_with("Counter"), as.numeric)) |>
         dplyr::filter(paste0(Year,Watercraft_Risk_Assessment_ID) %in%
@@ -440,19 +446,20 @@ summarise_imdp_data_to_waterbodies = function(
     dplyr::filter(!is.na(TotalInspections))
 
   # Set up name for file.
-  name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_",unique(wbs_with_dat_this_year$Year),".gpkg")
+  # name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/",my_opts$year,"/data/Waterbodies_with_Inspection_Data_Summaries_",my_opts$year,".gpkg")
+  name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/",report.year," IMDP Final Report/data/spatial/Waterbodies_with_Inspection_Data_Summaries_",report.year,".gpkg")
   # name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values.gpkg')
 
   # Has some data filter been introduced? If so, reflect that in the file name.
   if(!is.null(data_filter)){
     # name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_',data_filter$field,'_filtered.gpkg')
-    name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_",unique(wbs_with_dat_this_year$Year),"_",data_filter$field,"_filtered.gpkg")
+    name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/",report.year," IMDP Final Report/data/spatial/Waterbodies_with_Inspection_Data_Summaries_",report.year,"_",data_filter$field,"_filtered.gpkg")
   }
   # And if one of the preset data filters has been used, reference that directly.
   if(!is.null(data_filter_preset)){
     if(data_filter_preset == 'WD_infected_areas'){
       # name_for_spatial_file_year_records = paste0('W:/CMadsen/Projects/ZQMussels/',my_opts$year,' IMDP Final Report/data/spatial/Waterbodies_with_binned_and_original_values_WD_Infected_Areas.gpkg')
-      name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/data/Waterbodies_with_Inspection_Data_Summaries_",unique(wbs_with_dat_this_year$Year),"_WD_Infected_Areas.gpkg")
+      name_for_spatial_file_year_records = paste0(my_opts$remote_spatial_data,"Projects/ZQMussels/",report.year," IMDP Final Report/data/spatial/Waterbodies_with_Inspection_Data_Summaries_",report.year,"_WD_Infected_Areas.gpkg")
     }
   }
 
