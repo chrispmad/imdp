@@ -18,7 +18,7 @@ general_imdp_data_prep = function(
 
   if(verbose) {
 
-    estimated_finish_time = Sys.time() + lubridate::minutes(15)
+    estimated_finish_time = Sys.time() + lubridate::minutes(30)
 
     finish_minute = lubridate::minute(estimated_finish_time)
     if(as.numeric(finish_minute) < 10) finish_minute = paste0('0',finish_minute)
