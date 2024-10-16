@@ -14,5 +14,8 @@ import_metabase_dat = function(){
 
   rm(metabase_data_list)
 
+  # Use a pretty complicated bifurcating function to clean up the shift start and end time fields.
+  metabase_dat = correct_shift_start_and_end_times(metabase_dat)
+
   return(metabase_dat)
 }
