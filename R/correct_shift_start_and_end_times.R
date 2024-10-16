@@ -134,7 +134,8 @@ correct_shift_start_and_end_times = function(metabase_dat){
                   end_time_new = end_time + lubridate::hours(ceiling(date_difference))) |>
     dplyr::select(-first_insp_hour,-current_start_time_hour) |>
     # Write over the original shift start and end times.
-    dplyr::mutate(start_time = start_time_new, end_time = end_time_new) |>
+    dplyr::mutate(start_time = start_time_new,
+                  end_time = end_time_new) |>
     dplyr::mutate(shift_length = end_time_new - start_time_new) |>
     dplyr::rename(`Start Time` = start_time,
                   `End Time` = end_time,
@@ -161,8 +162,8 @@ correct_shift_start_and_end_times = function(metabase_dat){
     # up to nearest hour.
     dplyr::mutate(first_insp_datetime = lubridate::floor_date(first_insp_datetime, unit = "hours"),
                   last_insp_datetime = lubridate::ceiling_date(last_insp_datetime, unit = "hours")) |>
-    dplyr::rename(`Start Time` = start_time,
-                  `End Time` = end_time,
+    dplyr::mutate(`Start Time` = first_insp_datetime,
+                  `End Time` = last_insp_datetime,
                   `Workflow ID` = wfid) |>
     dplyr::select(dplyr::all_of(names(metabase_dat)))
 
