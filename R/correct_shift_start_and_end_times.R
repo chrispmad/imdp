@@ -1,5 +1,32 @@
-correct_shift_start_and_end_times = function(metabase_dat){
+correct_shift_start_and_end_times = function(metabase_dat, simple_method = TRUE){
 
+  if(simple_method){
+  # This section ("simple") basically just adds 1 day to shift end times
+  # that are before shift start times. It then adds
+  # 7 hours to the shift start and and end times.
+  metabase_dat = metabase_dat |>
+    dplyr::rename(Workflow_ID = `Workflow ID`,
+                  Start_Time = `Start Time`,
+                  End_Time = `End Time`) |>
+    dplyr::mutate(Start_Time = lubridate::ymd_hms(Start_Time),
+                  End_Time = lubridate::ymd_hms(End_Time),
+                  raw_timestamp = lubridate::ymd_hms(raw_timestamp)) |>
+    dplyr::mutate(new_end_time = End_Time + lubridate::days(1)) |>
+    dplyr::mutate(end_time_needs_change = End_Time < Start_Time) |>
+    dplyr::mutate(End_Time = ifelse(end_time_needs_change, new_end_time, End_Time)) |>
+    dplyr::select(-c(new_end_time,end_time_needs_change)) |>
+    dplyr::mutate(End_Time = lubridate::as_datetime(End_Time)) |>
+    dplyr::mutate(Start_Time = Start_Time + lubridate::hours(7),
+                  End_Time = End_Time + lubridate::hours(7))
+
+  # It's a bit silly, but return the old column type to Start Time and End Time.
+  metabase_dat = metabase_dat |>
+    dplyr::mutate(`Start Time` = as.character(Start_Time),
+                  `End Time` = as.character(End_Time),
+                  raw_timestamp = as.character(raw_timestamp)) |>
+    dplyr::select(-Start_Time, -End_Time)
+  }
+  if(!simple_method){
   # This section of code corrects errors in shift start and end times. To do this,
   # we first test to see if the end_time is later than the start_time. If it is,
   # we find the difference in hours between the raw timestamp and the shift start,
@@ -189,6 +216,9 @@ correct_shift_start_and_end_times = function(metabase_dat){
                   `End Time` = as.character(`End Time`),
                   raw_timestamp = as.character(raw_timestamp))
 
+  }
+
+  # Return the results of the method selected above
   return(metabase_dat)
 
 }
