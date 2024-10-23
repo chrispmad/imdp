@@ -1,4 +1,4 @@
-#' Title
+#' Clean IMDP Data
 #'
 #' @param dat
 #' @param my_opts
@@ -293,6 +293,7 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
            New_Passport_Issued_Ind,
            Passport_Holder_Ind,
            Previous_Inspection_Ind,
+           Previous_Inspection_Source_Name,
            Dreissenid_mussels_found_during_previous_inspection,
            Previous_Inspection_Days_Count,
            Previous_AIS_Knowledge_Ind,

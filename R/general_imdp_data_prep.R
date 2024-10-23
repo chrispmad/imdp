@@ -1,4 +1,4 @@
-#' Title Combine and clean IMDP inspection data
+#' Combine and clean IMDP inspection data
 #'
 #' @param options_filepath Filepath to options .csv file
 #' @param verbose Return copious feedback?

@@ -1,4 +1,4 @@
-#' Title Run both IMDP data cleaning functions in succession
+#' Run both IMDP data cleaning functions in succession
 #'
 #' @param dat This should be the cleaned data output from the 'general_imdp_data_prep' function; i.e. a file named 'WatercraftInspectionData_AllYears_Selected_Columns.xlsx'. If NULL, will search J: LAN folder for data file.
 #' @param options_filepath Filepath to 'my_opts.csv' file on local machine.
