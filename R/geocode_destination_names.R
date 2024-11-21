@@ -3,6 +3,7 @@ geocode_destination_names = function(
     my.data.folder,
     redo_geocoding,
     verbose){
+
   if(file.exists(paste0(my.data.folder,"DestinationPlacenames.xlsx")) & redo_geocoding == F) {
     if(verbose) cat("\nExcel file of destination placenames detected - reading in...")
     DestinationPlacenames = readxl::read_excel(paste0(my.data.folder,"DestinationPlacenames.xlsx"))
@@ -35,38 +36,39 @@ geocode_destination_names = function(
       dplyr::group_by(piece_id) |>
       dplyr::group_split()
 
-    number_pieces = length(destination_placenames_pieces)
+    # number_pieces = length(destination_placenames_pieces)
 
-    piece_percentage = ceiling(100 / number_pieces)
+    # piece_percentage = ceiling(100 / number_pieces)
 
-    cat('\n|')
-    DestinationPlacenames = lapply(
-      destination_placenames_pieces, \(x) ~ {
+    # cat('\n|')
+    # browser()
+    print("Starting geocoding...")
 
-        cat(paste0('=',piece_percentage,'%=|'))
+    for(i in 1:nrow(DestinationPlacenames)){
 
-        for(i in 1:nrow(x)){
+      # Pull out place name.
+      my.name = DestinationPlacenames[i,]$names
+      # Replace any accented names, starting with just é.
+      my.name = stringr::str_replace_all(my.name, "(é|Ã©)", "e")
+      #Clean up names. Remove anything in brackets.
+      my.name = stringr::str_remove_all(my.name, " \\(.*\\)")
+      #Add spaces to names.
+      my.name = stringr::str_replace_all(my.name, " ", "%20")
 
-          # Pull out place name.
-          my.name = DestinationPlacenames[i,]$names
-          #Clean up names. Remove anything in brackets.
-          my.name = stringr::str_remove_all(my.name, " \\(.*\\)")
-          #Add spaces to names.
-          my.name = stringr::str_replace_all(my.name, " ", "%20")
+      url = paste0('https://geocoder.api.gov.bc.ca/addresses.json?addressString=',
+                   my.name,'&maxResults=1&outputSRS=4326')
 
-          url = paste0('https://geocoder.api.gov.bc.ca/addresses.json?addressString=',
-                       my.name,'&maxResults=1&outputSRS=4326')
+      my.coords = jsonlite::fromJSON(url)$features$geometry |>
+        dplyr::summarise(lon = stringr::str_extract(coordinates, "(?<=c\\().*(?=\\,)"),
+                         lat = stringr::str_extract(coordinates, "(?<=\\,).*(?=\\))"))
 
-          my.coords = jsonlite::fromJSON(url)$features$geometry |>
-            dplyr::summarise(lon = stringr::str_extract(coordinates, "(?<=c\\().*(?=\\,)"),
-                             lat = stringr::str_extract(coordinates, "(?<=\\,).*(?=\\))"))
+      DestinationPlacenames[i,]$lon = my.coords$lon
+      DestinationPlacenames[i,]$lat = my.coords$lat
+    }
 
-          x[i,]$lon = my.coords$lon
-          x[i,]$lat = my.coords$lat
-        }
-      }
-    ) |>
-      dplyr::bind_rows() |>
+    print("Finished geocoding placenames")
+
+    DestinationPlacenames = DestinationPlacenames |>
       dplyr::filter(!is.na(names))
 
     openxlsx::write.xlsx(DestinationPlacenames,
