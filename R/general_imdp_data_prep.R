@@ -13,7 +13,7 @@
 #'
 #' @examples \dontrun
 general_imdp_data_prep = function(
-    options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
+    options_filepath = NA,
     verbose = T){
 
   if(verbose) {

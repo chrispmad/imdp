@@ -12,9 +12,11 @@
 update_all_imdp_data = function(
     dat = NULL,
     year = NULL,
-    options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
+    options_filepath = NA,
     verbose = T,
     update_spatial_files = T){
+
+  if(is.na(options_filepath)) stop("Please provide the filepath to your Options.csv file")
 
   general_imdp_data_prep(options_filepath = options_filepath)
 

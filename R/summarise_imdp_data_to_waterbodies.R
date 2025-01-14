@@ -17,7 +17,7 @@ summarise_imdp_data_to_waterbodies = function(
     year = NULL,
     data_filter = NULL,
     data_filter_preset = NULL,
-    options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
+    options_filepath = NA,
     redo_geocoding = F,
     verbose = T){
 

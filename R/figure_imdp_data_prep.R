@@ -11,7 +11,7 @@
 #' @examples \dontrun
 figure_imdp_data_prep = function(
     dat = NULL,
-    options_filepath = 'C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv',
+    options_filepath = NA,
     year = NULL,
     verbose = T){
 
