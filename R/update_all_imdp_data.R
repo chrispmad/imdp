@@ -16,11 +16,11 @@ update_all_imdp_data = function(
     verbose = T,
     update_spatial_files = T){
 
-  general_imdp_data_prep()
+  general_imdp_data_prep(options_filepath = options_filepath)
 
-  figure_imdp_data_prep()
+  figure_imdp_data_prep(options_filepath = options_filepath)
 
   if(update_spatial_files) {
-    summarise_imdp_data_to_waterbodies()
+    summarise_imdp_data_to_waterbodies(options_filepath = options_filepath)
   }
 }

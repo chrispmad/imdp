@@ -178,37 +178,6 @@ summarise_imdp_data_to_waterbodies = function(
                          'Pacific Ocean',
                          GNIS_NA))
 
-  # # I actually don't think we can do the following steps (replacing blanks in
-  # lat and long for pacific ocean / dry storage destinated watercraft), as it
-  # seems to make a lot of records NOT heading to a lake in BC appear as if they are!
-
-  # Replace missing coords for any records going to either 'Pacific Ocean'
-  # or 'Dry Storage'
-  # pac_centroids = as.character(as.data.frame(sf::st_coordinates(sf::st_centroid(sf::st_transform(wbs_m[wbs_m$GNIS_NA == 'Pacific Ocean',], 4326)))))
-  # ds_centroids = as.character(as.data.frame(sf::st_coordinates(sf::st_centroid(sf::st_transform(wbs_m[wbs_m$GNIS_NA == 'Dry Storage',], 4326)))))
-
-  # dat_join |>
-  #   dplyr::filter(GNIS_NA %in% c('Pacific Ocean','Dry Storage')) |>
-  #   dplyr::filter(is.na(lat))
-  #
-  # dat_join = dat_join |>
-  #   dplyr::mutate(lat = dplyr::case_when(
-  #     GNIS_NA == 'Pacific Ocean' ~ pac_centroids[2],
-  #     T ~ lat
-  #   )) |>
-  #   dplyr::mutate(lon = dplyr::case_when(
-  #     GNIS_NA == 'Pacific Ocean' ~  pac_centroids[1],
-  #     T ~ lon
-  #   )) |>
-  #   dplyr::mutate(lat = dplyr::case_when(
-  #     GNIS_NA == 'Dry Storage' ~  ds_centroids[2],
-  #     T ~ lat
-  #   )) |>
-  #   dplyr::mutate(lon = dplyr::case_when(
-  #     GNIS_NA == 'Dry Storage' ~ ds_centroids[1],
-  #     T ~ lon
-  #   ))
-
   dat_join_w_coords = dat_join |>
     dplyr::filter(!is.na(lon),!is.na(lat))
 
