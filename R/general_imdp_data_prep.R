@@ -41,7 +41,7 @@ general_imdp_data_prep = function(
   my.external.data.folder = "W:/CMadsen/shared_data_sets/"
 
   # Set working directory to location of data file.
-  setwd(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Raw inspection data for sharing (all years)/Clean files all years"))
+  # setwd(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Raw inspection data for sharing (all years)/Clean files all years"))
 
   # =======
   # Step 1

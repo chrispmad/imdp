@@ -2,12 +2,12 @@ read_combine_excel_metabase_data = function(verbose, my_opts){
 
   if(verbose) cat("\nReading in excel files...")
   # Bring in raw excel data (2015 - 2019).
-  excel_dat_list = suppressMessages(import_excel_data())
+  excel_dat_list = suppressMessages(import_excel_data(my_opts))
   if(verbose) cat("\nFinished reading in excel files...")
 
   if(verbose) cat("\nReading in excel files...")
   # Bring in metabase data.
-  metabase_dat = import_metabase_dat()
+  metabase_dat = import_metabase_dat(my_opts)
   if(verbose) cat("\nFinished reading in metabase files...")
 
   # Clean excel datetime columns

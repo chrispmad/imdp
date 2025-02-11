@@ -1,6 +1,9 @@
 import_metabase_dat = function(){
 
-  files.to.read = list.files(pattern = "metabase_")
+  dat_folder = paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Raw inspection data for sharing (all years)/Clean files all years")
+
+  files.to.read = list.files(pattern = "metabase_",
+                             path = dat_folder)
 
   #Read in each metabase csv file and put them all together in a list.
   metabase_data_list = lapply(files.to.read, readr::read_csv, col_types = readr::cols(.default = "c"))
