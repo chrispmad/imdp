@@ -39,7 +39,7 @@ read_combine_excel_metabase_data = function(verbose, my_opts){
 
   # Make sure mussel-fouled records align between hand-corrected sheets from
   # Martina and the raw data.
-  excel_dat_list = suppressMessages(align_mf_excel_records(excel_dat_list))
+  excel_dat_list = suppressMessages(align_mf_excel_records(excel_dat_list,my_opts))
 
   metabase_dat = suppressMessages(suppressWarnings(align_mf_metabase_records(metabase_dat,my_opts)))
 

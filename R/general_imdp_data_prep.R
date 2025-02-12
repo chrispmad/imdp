@@ -49,6 +49,8 @@ general_imdp_data_prep = function(
   # Read in and combine excel and metabase data files (1 per year)
   dat = read_combine_excel_metabase_data(verbose, my_opts)
 
+  cat("Finished combining excel and metabase data...\n")
+
   abbrev = readxl::read_excel(paste0("W:/CMadsen/Projects/ZQMussels/data/Province_States_Abbreviation_Table.xlsx"))
 
   # =======

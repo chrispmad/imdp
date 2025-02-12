@@ -5,15 +5,15 @@
 #' @return table of IMDP inspections, old records with watercraft complexity types
 #'
 #' @examples \dontrun
-update_old_data_watercraft_type = function(dat){
+update_old_data_watercraft_type = function(dat,my_opts){
 
   #Split watercraft type for older data at each comma, put those in
   #new rows. Convert watercraft type to one of the four types used
   #in later years. Bring those up into one row per inspection.
 
   #Grabbing a helpful excel doc that classifies boats into new categories.
-  boattypes = readxl::read_excel("UniqueWCTypes.xlsx") |>
-    dplyr::left_join(readxl::read_excel("watercraft categories_06Aug2021.xlsx") |>
+  boattypes = readxl::read_excel(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/UniqueWCTypes.xlsx")) |>
+    dplyr::left_join(readxl::read_excel(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/watercraft categories_06Aug2021.xlsx")) |>
                        dplyr::rename(BoatType = `watercraft type`,
                                      NewCat = `New Category`) |> dplyr::select(-Comments),
                      by = dplyr::join_by(BoatType)) |>

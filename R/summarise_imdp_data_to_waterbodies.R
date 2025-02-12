@@ -26,7 +26,7 @@ summarise_imdp_data_to_waterbodies = function(
 
   my_opts = suppressMessages(readr::read_csv(options_filepath))
 
-  setwd(my_opts$base_dir)
+  # setwd(my_opts$base_dir)
 
   # IMPORT DATA
 
@@ -107,7 +107,7 @@ summarise_imdp_data_to_waterbodies = function(
   # We need to bring in lakes, rivers and man-made water bodies,
   # drop nameless ones, then summarize any that have multiple
   # polygons into a single multipolygon.
-
+  browser()
   wbs_m = sum_wbs_by_name_subwatershed(external.shared.datasets)
 
   if(verbose) cat("\nMerged waterbodies geopackage read in.")

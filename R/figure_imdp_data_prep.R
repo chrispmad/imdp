@@ -24,7 +24,7 @@ figure_imdp_data_prep = function(
     report.year = year
   }
 
-  setwd(my_opts$base_dir)
+  # setwd(my_opts$base_dir)
 
   #Data folders
   my.data.folder = paste0(my_opts$zqm_figure_local_folder,"data/")

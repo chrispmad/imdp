@@ -20,7 +20,7 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
   my.external.data.folder = "W:/CMadsen/shared_data_sets/"
 
   # Adjust working directory.
-  setwd(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/"))
+  # setwd(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/"))
 
   # cleaning steps from script 01.
 
@@ -79,8 +79,9 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
   # Update the older data's watercraft type to the 4
   # classifications used in recent years.
 
-  dat = update_old_data_watercraft_type(dat)
+  dat = update_old_data_watercraft_type(dat, my_opts)
 
+  cat("Updated old watercraft types...\n")
   # ====================================================================
   #  Correct Destination Water bodies that were incorrectly spelled and
   #  classify inspections where the boat is actually headed outside of
@@ -89,8 +90,10 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
   #  (the shapefile I refer to is an amalgamation I made of lakes, rivers,
   #  and man-made waterbodies in BC)
 
-  name_corr = readxl::read_excel("WatercraftInspections_no_WB_NameMatch.xlsx") |>
+  name_corr = readxl::read_excel(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/","WatercraftInspections_no_WB_NameMatch.xlsx")) |>
     dplyr::select(-WATERSHED)
+
+  cat("Read in watercraft inspections no waterbody match excel file...\n")
 
   #Add a column with the corrected destination wb names.
   dat = suppressMessages(
@@ -307,6 +310,8 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
            DryStorage,
            Unknown_Destination_Waterbody_Ind,
            OceanBoat)
+
+  cat("Finished making trimmed down version of 'dat' with select columns...\n")
 
   return(list(dat, dat_select_columns, highrisk_dat, musselfouled_dat))
 }
