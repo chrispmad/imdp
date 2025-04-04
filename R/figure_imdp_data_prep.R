@@ -15,6 +15,9 @@ figure_imdp_data_prep = function(
     year = NULL,
     verbose = T){
 
+  # Record initial working directory; reset wd to this at end of function.
+  original_wd = getwd()
+
   my_opts = suppressMessages(readr::read_csv(options_filepath))
 
   #Which year should we focus on?
@@ -450,4 +453,7 @@ figure_imdp_data_prep = function(
   openxlsx::write.xlsx(dat_mf, "./figure_dat_mf.xlsx", overwrite = T)
 
   readr::write_csv(dat, "./figure_dat_all.csv")
+
+  # Reset working directory.
+  setwd(original_wd)
 }
