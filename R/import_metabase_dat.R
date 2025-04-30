@@ -2,7 +2,7 @@ import_metabase_dat = function(my_opts){
 
   dat_folder = paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Raw inspection data for sharing (all years)/Clean files all years")
 
-  files.to.read = list.files(pattern = "metabase_",
+  files.to.read = list.files(pattern = "metabase_[0-9]+",
                              path = dat_folder,
                              full.names = T)
 
