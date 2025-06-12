@@ -2,13 +2,9 @@
 % Please edit documentation in R/general_imdp_data_prep.R
 \name{general_imdp_data_prep}
 \alias{general_imdp_data_prep}
-\title{Title Combine and clean IMDP inspection data}
+\title{Combine and clean IMDP inspection data}
 \usage{
-general_imdp_data_prep(
-  options_filepath =
-    "C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv",
-  verbose = T
-)
+general_imdp_data_prep(options_filepath = NA, verbose = T)
 }
 \arguments{
 \item{options_filepath}{Filepath to options .csv file}

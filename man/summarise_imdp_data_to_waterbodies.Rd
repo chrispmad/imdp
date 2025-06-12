@@ -6,14 +6,22 @@
 \usage{
 summarise_imdp_data_to_waterbodies(
   dat = NULL,
-  options_filepath =
-    "C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv",
+  year = NULL,
+  data_filter = NULL,
+  data_filter_preset = NULL,
+  options_filepath = NA,
   redo_geocoding = F,
   verbose = T
 )
 }
 \arguments{
 \item{dat}{This should be the cleaned data output from the 'general_imdp_data_prep' function; i.e. a file named 'WatercraftInspectionData_AllYears_Selected_Columns.xlsx'. If NULL, will search J: LAN folder for data file.}
+
+\item{year}{Limit this summary to a specific year.}
+
+\item{data_filter}{Restrict the data feeding into this summary with a list of length two: the first element in the field to filter on, the second element is the list of acceptable values.}
+
+\item{data_filter_preset}{Preset options for data filters; currently includes 'WD_infected_areas' that filters data for watercraft coming from WD-infected states/provinces outside of BC, and 'BC_WD_infected_wbs' for just watercraft coming from infected waterbodies in BC.}
 
 \item{options_filepath}{Filepath to 'my_opts.csv' file on local machine.}
 

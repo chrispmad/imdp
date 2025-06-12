@@ -2,13 +2,12 @@
 % Please edit documentation in R/update_all_imdp_data.R
 \name{update_all_imdp_data}
 \alias{update_all_imdp_data}
-\title{Title Run both IMDP data cleaning functions in succession}
+\title{Run both IMDP data cleaning functions in succession}
 \usage{
 update_all_imdp_data(
   dat = NULL,
   year = NULL,
-  options_filepath =
-    "C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv",
+  options_filepath = NA,
   verbose = T,
   update_spatial_files = T
 )
@@ -26,7 +25,7 @@ update_all_imdp_data(
 Four excel files (this year's inspections, all inspections, high-risk inspections, and mussel-fouled inspections), plus updated GIS files on W: drive and excel tables on LAN J: drive.
 }
 \description{
-Title Run both IMDP data cleaning functions in succession
+Run both IMDP data cleaning functions in succession
 }
 \examples{
 \dontrun

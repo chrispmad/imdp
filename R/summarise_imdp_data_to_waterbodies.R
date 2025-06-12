@@ -3,7 +3,7 @@
 #' @param dat This should be the cleaned data output from the 'general_imdp_data_prep' function; i.e. a file named 'WatercraftInspectionData_AllYears_Selected_Columns.xlsx'. If NULL, will search J: LAN folder for data file.
 #' @param year Limit this summary to a specific year.
 #' @param data_filter Restrict the data feeding into this summary with a list of length two: the first element in the field to filter on, the second element is the list of acceptable values.
-#' @param data_filter_preset Preset options for data filters; currently includes 'WD_infected_areas' for Whirling Disease.
+#' @param data_filter_preset Preset options for data filters; currently includes 'WD_infected_areas' that filters data for watercraft coming from WD-infected states/provinces outside of BC, and 'BC_WD_infected_wbs' for just watercraft coming from infected waterbodies in BC.
 #' @param options_filepath Filepath to 'my_opts.csv' file on local machine.
 #' @param verbose Return copious feedback?
 #' @param redo_geocoding Shall we redo the time-intensive geocoding of closest cities? This takes about 20 minutes.
@@ -66,10 +66,17 @@ summarise_imdp_data_to_waterbodies = function(
     }
   }
 
+  # Apply data limit
+  if(!is.null(data_filter)){
+    dat = dat |>
+      dplyr::filter(!!rlang::sym(data_filter$field) %in% data_filter$values)
+  }
+
   # Optional: apply intraprovincial WD filter: waterbodies within BC that have been infected.
   if(!is.null(data_filter_preset)){
-    if(data_filter_preset == 'WD_infected_areas'){
-      dat_bc_inf_wb = dat |>
+    if(data_filter_preset == 'BC_WD_infected_wbs'){
+      print("Option for BC WD infected wbs activated!")
+      dat = dat |>
         dplyr::filter(stringr::str_detect(Previous_Waterbody_1_Name,"(Goat River|Emerald Lake|Elk River|Boulder Creek|Duck Creek)")) |>
         dplyr::mutate(keep_row = T) |>
         dplyr::mutate(keep_row = dplyr::case_when(
@@ -78,19 +85,11 @@ summarise_imdp_data_to_waterbodies = function(
           T ~ keep_row
         )) |>
         dplyr::filter(keep_row)
+      print(paste0("After filtering for WD-infected WBs in BC, row count of dat dropped to ",nrow(dat)))
+
+      # If there are no high-risk inspections, add a dummy one here.
+
     }
-  }
-
-  # Apply data limit
-  if(!is.null(data_filter)){
-    dat = dat |>
-      dplyr::filter(!!rlang::sym(data_filter$field) %in% data_filter$values)
-  }
-
-  if(exists('dat_bc_inf_wb')){
-    print(paste0("dat_bc_inf_wb object exists, since we filtered for whirling disease. Adding these ",nrow(dat_bc_inf_wb)," rows to dat..."))
-    dat = dat |>
-      dplyr::bind_rows(dat_bc_inf_wb)
   }
 
   #Data folders
@@ -274,10 +273,17 @@ summarise_imdp_data_to_waterbodies = function(
     dplyr::distinct() |>
     dplyr::group_by(GNIS_NA, Closest_City) |>
     dplyr::summarise(dplyr::across(c(n,dplyr::ends_with("Counter")), \(x) sum(x,na.rm=T))) |>
-    dplyr::ungroup() |>
-    # And add in two new little columns for HR: motorized or nonmotorized.
-    dplyr::mutate(HR_mot = HR_Simple_Counter + HR_Complex_Counter + HR_Very_Complex_Counter,
-                  HR_nonmot = HR_Non_Motorized_Counter)
+    dplyr::ungroup()
+
+  # Is there is no HR_Complex_Counter variable present (e.g. if we're filtering
+  # for WD-infected waterbodies in BC), add it here.
+  if(sum(c('HR_Simple_Counter',"HR_Complex_Counter","HR_Very_Complex_Counter","HR_Non_Motorized_Counter") %in% names(dat_summ)) > 0){
+    dat_summ = dat_summ |>
+      # And add in two new little columns for HR: motorized or nonmotorized.
+      dplyr::mutate(HR_mot = HR_Simple_Counter + HR_Complex_Counter + HR_Very_Complex_Counter,
+                    HR_nonmot = HR_Non_Motorized_Counter)
+  }
+
   if(verbose) cat("\nIMDP inspection data, low and high risk inspections split into boat types...")
   # Turn the spatial object of waterbodies (merged) into a list,
   # split by name (each element has 1 or more elements, all with the same GNIS_NA name)
@@ -302,8 +308,17 @@ summarise_imdp_data_to_waterbodies = function(
   ) |> dplyr::bind_rows() |>
     dplyr::distinct() |>
     # Summarise by waterbody name and subwatershed...
-    dplyr::group_by(WATERSH,GNIS_NA) |>
-    dplyr::summarise(dplyr::across(c(n,dplyr::ends_with('Counter'),HR_mot,HR_nonmot), \(x) sum(x,na.rm=T))) |>
+    dplyr::group_by(WATERSH,GNIS_NA)
+
+  if('HR_mot' %in% names(imdp_dat_with_watershed)){
+    imdp_dat_with_watershed = imdp_dat_with_watershed |>
+      dplyr::summarise(dplyr::across(c(n,dplyr::ends_with('Counter'),HR_mot,HR_nonmot), \(x) sum(x,na.rm=T)))
+  } else {
+    imdp_dat_with_watershed = imdp_dat_with_watershed |>
+      dplyr::summarise(dplyr::across(c(n,dplyr::ends_with('Counter')), \(x) sum(x,na.rm=T)))
+  }
+
+  imdp_dat_with_watershed = imdp_dat_with_watershed |>
     dplyr::ungroup() |>
     dplyr::rename(
       TotalInspections = n,
@@ -335,6 +350,9 @@ summarise_imdp_data_to_waterbodies = function(
   if(!is.null(data_filter_preset)){
     if(data_filter_preset == 'WD_infected_areas'){
       name_for_spatial_file_all_records = paste0("Waterbodies_with_Inspection_Data_Summaries_all_years_WD_Infected_Areas.gpkg")
+    }
+    if(data_filter_preset == 'BC_WD_infected_wbs'){
+      name_for_spatial_file_all_records = paste0("Waterbodies_with_Inspection_Data_Summaries_all_years_BC_WD_Infected_Waterbodies.gpkg")
     }
   }
 

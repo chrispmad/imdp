@@ -4,7 +4,7 @@
 \alias{update_old_data_watercraft_type}
 \title{Title Update the older data's watercraft type.}
 \usage{
-update_old_data_watercraft_type(dat)
+update_old_data_watercraft_type(dat, my_opts)
 }
 \arguments{
 \item{dat}{table of IMDP inspections}

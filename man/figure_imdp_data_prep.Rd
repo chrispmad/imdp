@@ -2,12 +2,11 @@
 % Please edit documentation in R/figure_imdp_data_prep.R
 \name{figure_imdp_data_prep}
 \alias{figure_imdp_data_prep}
-\title{Title More stringent data preparation for IMDP report figures}
+\title{More stringent data preparation for IMDP report figures}
 \usage{
 figure_imdp_data_prep(
   dat = NULL,
-  options_filepath =
-    "C:/Users/CMADSEN/Downloads/LocalR/long_term_projects/ZQMussels/Options.csv",
+  options_filepath = NA,
   year = NULL,
   verbose = T
 )
@@ -25,7 +24,7 @@ figure_imdp_data_prep(
 Four excel files (this year's inspections, all inspections, high-risk inspections, and mussel-fouled inspections)
 }
 \description{
-Title More stringent data preparation for IMDP report figures
+More stringent data preparation for IMDP report figures
 }
 \examples{
 \dontrun
