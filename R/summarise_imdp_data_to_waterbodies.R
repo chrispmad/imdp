@@ -61,6 +61,23 @@ summarise_imdp_data_to_waterbodies = function(
                         values = c("WA","OR","CA","NV","ID","MT","WY","CO","UT","AZ","NM","NE",
                                    "MI","OH","WV","VA","NC","PA","NY","VT","NH","MA","RI","CT","NJ","DE","MC","DC",
                                    "AB"))
+      data_filter_bc_wb = list(field = 'Previous_Waterbody_1_Name',
+                               values = c(""))
+    }
+  }
+
+  # Optional: apply intraprovincial WD filter: waterbodies within BC that have been infected.
+  if(!is.null(data_filter_preset)){
+    if(data_filter_preset == 'WD_infected_areas'){
+      dat_bc_inf_wb = dat |>
+        dplyr::filter(stringr::str_detect(Previous_Waterbody_1_Name,"(Goat River|Emerald Lake|Elk River|Boulder Creek|Duck Creek)")) |>
+        dplyr::mutate(keep_row = T) |>
+        dplyr::mutate(keep_row = dplyr::case_when(
+          Previous_Waterbody_1_Name == 'Elk River' & !Previous_Waterbody_1_Closest_City %in% c("Fernie","Elko") ~ F,
+          Previous_Waterbody_1_Name == 'Elk River' & Previous_Waterbody_1_Closest_City == 'Prince George' ~ F,
+          T ~ keep_row
+        )) |>
+        dplyr::filter(keep_row)
     }
   }
 
@@ -68,6 +85,12 @@ summarise_imdp_data_to_waterbodies = function(
   if(!is.null(data_filter)){
     dat = dat |>
       dplyr::filter(!!rlang::sym(data_filter$field) %in% data_filter$values)
+  }
+
+  if(exists('dat_bc_inf_wb')){
+    print(paste0("dat_bc_inf_wb object exists, since we filtered for whirling disease. Adding these ",nrow(dat_bc_inf_wb)," rows to dat..."))
+    dat = dat |>
+      dplyr::bind_rows(dat_bc_inf_wb)
   }
 
   #Data folders

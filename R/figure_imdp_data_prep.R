@@ -402,6 +402,7 @@ figure_imdp_data_prep = function(
       #If we have no name or city, and either of the categories flagged (e.g. "DestNotBC"), use those.
       Dest_not_wb == T ~ "Outside BC",
       DryStorage == T ~ "Dry Storage",
+      Unknown_Destination_Waterbody_Ind == T ~ "Unknown (Toggle)",
       T ~ "Unknown"))
 
   #Same thing for our little mussel-fouled table...
