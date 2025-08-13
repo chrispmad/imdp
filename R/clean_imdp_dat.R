@@ -17,7 +17,7 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
 
   #Data folders.
   my.data.folder = paste0(my_opts$base_dir,"01_DataCleaning/data/")
-  my.external.data.folder = "W:/CMadsen/shared_data_sets/"
+  my.external.data.folder = "//SFP.IDIR.BCGOV/S140/S40203/WFC AEB/General/2 SCIENCE - Invasives/AIS_R_Projects/CMadsen_Wdrive/shared_data_sets/"
 
   # Adjust working directory.
   # setwd(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/"))

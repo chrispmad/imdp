@@ -38,7 +38,7 @@ general_imdp_data_prep = function(
 
   #Data folders.
   my.data.folder = paste0(my_opts$base_dir,"01_DataCleaning/data/")
-  my.external.data.folder = "W:/CMadsen/shared_data_sets/"
+  my.external.data.folder = "//SFP.IDIR.BCGOV/S140/S40203/WFC AEB/General/2 SCIENCE - Invasives/AIS_R_Projects/CMadsen_Wdrive/shared_data_sets/"
 
   # Set working directory to location of data file.
   # setwd(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Raw inspection data for sharing (all years)/Clean files all years"))
@@ -51,7 +51,7 @@ general_imdp_data_prep = function(
 
   cat("Finished combining excel and metabase data...\n")
 
-  abbrev = readxl::read_excel(paste0("W:/CMadsen/Projects/ZQMussels/data/Province_States_Abbreviation_Table.xlsx"))
+  abbrev = readxl::read_excel(paste0("//SFP.IDIR.BCGOV/S140/S40203/WFC AEB/General/2 SCIENCE - Invasives/AIS_R_Projects/CMadsen_Wdrive/Projects/ZQMussels/data/Province_States_Abbreviation_Table.xlsx"))
 
   # =======
   # Step 2
