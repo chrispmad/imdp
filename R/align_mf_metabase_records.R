@@ -33,9 +33,15 @@ align_mf_metabase_records = function(dat,my_opts){
     dplyr::filter(!is.na(watercraft_risk_assessment_id)) |>
     dplyr::mutate(watercraft_risk_assessment_id = as.character(watercraft_risk_assessment_id))
 
+  dat25_mf = readxl::read_xlsx(paste0(my_opts$zqm_operations_data_folder,
+                                      "Watercraft Inspection Data/2025 data/mussel_fouled_summary.xlsx")) |>
+    purrr::set_names(snakecase::to_snake_case) |>
+    dplyr::filter(!is.na(watercraft_risk_assessment_id)) |>
+    dplyr::mutate(watercraft_risk_assessment_id = as.character(watercraft_risk_assessment_id))
+
   all_mf = c(dat20_mf$watercraft_risk_assessment_id, dat21_mf$watercraft_risk_assessment_id,
              dat22_mf$watercraft_risk_assessment_id, dat23_mf$watercraft_risk_assessment_id,
-             dat24_mf$watercraft_risk_assessment_id)
+             dat24_mf$watercraft_risk_assessment_id, dat25_mf$watercraft_risk_assessment_id)
 
   # Double check mussel fouled status.
   dat = dat |>
