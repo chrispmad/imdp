@@ -133,7 +133,7 @@ clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
     dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
   # Apply timezone/shift adjustment to every list element
-  dat <- lapply(dat, adjust_times, buffer_minutes = buffer_minutes)
+  #dat <- lapply(dat, adjust_times, buffer_minutes = buffer_minutes)
 
   return(dat)
 }
