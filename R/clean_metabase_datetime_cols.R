@@ -7,8 +7,13 @@ clean_metabase_datetime_cols = function(dat){
 
   # If the metabase data has the newer (i.e. as of 2025-04-07) datetime code
   # that keeps everything in UTC, don't do anything really!
-  dat_cleaned = dat |>
-    dplyr::filter(stringr::str_detect(`Inspection Time`,"^[0-9]{4}-[0-9]{2}-[0-9]{2}"))
+  dat_cleaned =  dat |>
+    dplyr::filter(stringr::str_detect(`Inspection Time`, "^[0-9]{4}-[0-9]{2}-[0-9]{2}")) |>
+    dplyr::rename(TimeOfInspection = `Inspection Time`) |>
+    dplyr::mutate(
+      TimeOfInspection = lubridate::ymd_hms(TimeOfInspection),
+      TimeOfInspection = lubridate::force_tz(TimeOfInspection, "America/Los_Angeles")
+    )
 
   dat_to_clean = dat |>
     dplyr::filter(!stringr::str_detect(`Inspection Time`,"^[0-9]{4}-[0-9]{2}-[0-9]{2}") | is.na(`Inspection Time`))
