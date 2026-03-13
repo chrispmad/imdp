@@ -1,7 +1,7 @@
 clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
 
   # Helper: adjust times for each element if required columns exist
-  adjust_times <- function(df, time_col = "TimeOfInspection",
+  adjust_times <- function(df, time_col = "TimeofInspection",
                            start_col = "Shift Start Time",
                            end_col = "Shift End Time",
                            buffer_minutes = 30) {
@@ -34,7 +34,7 @@ clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
     return(df)
   }
 
-  # ----- dat[[1]] -----
+  # ----- dat[[1]] ----- This is 2015 only
   dat[[1]] <- dat[[1]] |>
     dplyr::mutate(TimeOfInspection = dplyr::coalesce(`Time of High Risk Inspection`,
                                                      `Timestamp of inspection`,
@@ -49,7 +49,7 @@ clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
                                   `Shift Start Time`,`Shift End Time`), ~ lubridate::as_datetime(.))) |>
     dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
-  # ----- dat[[2]] -----
+  # ----- dat[[2]] ----- this is 2016
   dat[[2]] <- dat[[2]] |>
     dplyr::mutate(`Timestamp of inspection` = dplyr::case_when(
       stringr::str_extract(`Timestamp of inspection`, "^[0-9]{4}") != "2016" ~ `Shift Start Time`,
@@ -70,7 +70,7 @@ clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
     dplyr::filter(lubridate::year(TimeOfInspection) == 2016) |>
     dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
-  # ----- dat[[3]] -----
+  # ----- dat[[3]] ----- 2017
   dat[[3]] <- dat[[3]] |>
     dplyr::rename(time_of_insp = `Time of inspection`,
                   shift_start = `Shift Start Time`) |>
@@ -90,7 +90,7 @@ clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
     dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`), origin = "1899-12-30")) |>
     dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
-  # ----- dat[[4]] -----
+  # ----- dat[[4]] ----- 2018
   dat[[4]] <- dat[[4]] |>
     dplyr::rename(time_of_insp = `Time of Inspection`,
                   shift_start = `Shift Start Time`) |>
@@ -111,7 +111,7 @@ clean_excel_datetime_cols = function(dat, buffer_minutes = 30) {
     dplyr::mutate(`Shift Date` = as.Date(as.numeric(`Shift Date`), origin = "1899-12-30"))  |>
     dplyr::mutate(Hour_Min_of_Insp = stringr::str_extract(TimeOfInspection, '(?<= )[0-9]{2}:[0-9]{2}(?=:)'))
 
-  # ----- dat[[5]] -----
+  # ----- dat[[5]] ----- 2019
   dat[[5]] <- dat[[5]] |>
     dplyr::rename(time_of_insp = `Time of Inspection`,
                   shift_start = `Shift Start Time`) |>
