@@ -8,8 +8,8 @@ correct_shift_start_and_end_times = function(metabase_dat, simple_method = TRUE)
     dplyr::rename(Workflow_ID = `Workflow ID`,
                   Start_Time = `Start Time`,
                   End_Time = `End Time`) |>
-    dplyr::mutate(Start_Time = lubridate::ymd_hms(Start_Time),
-                  End_Time = lubridate::ymd_hms(End_Time),
+    dplyr::mutate(Start_Time = lubridate::ymd_hm(Start_Time),
+                  End_Time = lubridate::ymd_hm(End_Time),
                   raw_timestamp = lubridate::ymd_hms(raw_timestamp)) |>
     dplyr::mutate(new_end_time = End_Time + lubridate::days(1)) |>
     dplyr::mutate(end_time_needs_change = End_Time < Start_Time) |>
@@ -37,8 +37,8 @@ correct_shift_start_and_end_times = function(metabase_dat, simple_method = TRUE)
   metabase_shift_time_corrs = metabase_dat |>
     dplyr::ungroup() |>
     # Make start and end times of shifts into datetime columns.
-    dplyr::mutate(`Start Time` = lubridate::ymd_hms(`Start Time`),
-                  `End Time` = lubridate::ymd_hms(`End Time`),
+    dplyr::mutate(`Start Time` = lubridate::ymd_hm(`Start Time`),
+                  `End Time` = lubridate::ymd_hm(`End Time`),
                   raw_timestamp = lubridate::ymd_hms(raw_timestamp)) |>
     dplyr::mutate(shift_start_before_end = `Start Time` < `End Time`)
 
@@ -54,7 +54,7 @@ correct_shift_start_and_end_times = function(metabase_dat, simple_method = TRUE)
     # In the case when someone has written 24 as the end time, it should actually be 00 of the following day
     dplyr::mutate(hours_for_end_time = ifelse(hours_for_end_time == '24', '00',hours_for_end_time)) |>
     dplyr::mutate(`End Time` = paste0(`End Time`," ",hours_for_end_time,":00:00")) |>
-    dplyr::mutate(`End Time` = lubridate::ymd_hms(`End Time`)) |>
+    dplyr::mutate(`End Time` = lubridate::ymd_hm(`End Time`)) |>
     # For any rows that list midnight as their ending time, we need to change that to 00:00:00 of the following day.
     # dplyr::reframe(new_end_date = lubridate::ymd_hms(paste0(as.character(lubridate::date(`End Time`) + lubridate::days(1)), " 00:00:00")))
     dplyr::mutate(`End Time` = lubridate::as_datetime(ifelse(
@@ -106,8 +106,8 @@ correct_shift_start_and_end_times = function(metabase_dat, simple_method = TRUE)
     dplyr::filter(!is.na(total_inspections)) |>
     dplyr::rename(`Workflow ID` = wfid) |>
     dplyr::select(dplyr::all_of(names(metabase_dat))) |>
-    dplyr::mutate(`Start Time` = lubridate::ymd_hms(`Start Time`),
-                  `End Time` = lubridate::ymd_hms(`End Time`),
+    dplyr::mutate(`Start Time` = lubridate::ymd_hm(`Start Time`),
+                  `End Time` = lubridate::ymd_hm(`End Time`),
                   raw_timestamp = lubridate::ymd_hms(raw_timestamp))
 
   insp_with_time_issues = insp_by_wfid |>
@@ -124,7 +124,7 @@ correct_shift_start_and_end_times = function(metabase_dat, simple_method = TRUE)
 
   # The rest, though, need a fix :D
   metabase_with_time_issues = metabase_shift_time_corrs |>
-    dplyr::filter(!is.na(lubridate::ymd_hms(`End Time`))) |>
+    dplyr::filter(!is.na(lubridate::ymd_hm(`End Time`))) |>
     dplyr::mutate(date_from_rt = lubridate::date(raw_timestamp)) |>
     dplyr::mutate(date_from_rt_char = as.character(date_from_rt)) |>
     dplyr::mutate(wfid = ifelse(is.na(wfid), date_from_rt_char, wfid)) |>
