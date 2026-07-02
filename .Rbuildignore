@@ -1,2 +1,4 @@
 ^imdp\.Rproj$
 ^\.Rproj\.user$
+^\.positai$
+^\.claude$
