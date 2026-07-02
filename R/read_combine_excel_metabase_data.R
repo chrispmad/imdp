@@ -10,7 +10,7 @@ read_combine_excel_metabase_data = function(verbose, my_opts){
   metabase_dat = import_metabase_dat(my_opts)
   if(verbose) cat("\nFinished reading in metabase files...")
 
-  # Clean excel datetime columns
+  # Clean excel datetime columns - tested - this all works as intended
   excel_dat_list = suppressWarnings(clean_excel_datetime_cols(excel_dat_list))
   if(verbose) cat("\nFinished correcting excel datetime columns...")
 
