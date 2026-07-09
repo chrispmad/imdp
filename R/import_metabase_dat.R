@@ -25,8 +25,8 @@ import_metabase_dat = function(my_opts){
   # Pacific time, use lubridate's function "with_tz", it is awesome!
   metabase_dat_utc_timezone = metabase_dat |>
     dplyr::filter(stringr::str_detect(`Inspection Time`,"^[0-9\\-]{10}")) |>
-    dplyr::mutate(start_time_dt = lubridate::ymd_hms(`Start Time`),
-                  end_time_dt = lubridate::ymd_hms(`End Time`)) |>
+    dplyr::mutate(start_time_dt = lubridate::mdy_hm(`Start Time`),
+                  end_time_dt = lubridate::mdy_hm(`End Time`)) |>
     dplyr::mutate(start_time_pst = lubridate::with_tz(start_time_dt, tzone = "America/Los_Angeles"),
                   end_time_pst = lubridate::with_tz(end_time_dt, tzone = "America/Los_Angeles")) |>
     dplyr::mutate(start_time_pst = as.character(start_time_pst),
