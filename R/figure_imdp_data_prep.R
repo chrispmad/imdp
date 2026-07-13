@@ -63,7 +63,7 @@ figure_imdp_data_prep = function(
 
   #Read in data (cleaned, for all years?). These data do not have any of the "test" records from metabase.
   if(is.null(dat)){
-    dat = readxl::read_excel(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/WatercraftInspectionData_AllYears_Selected_Columns.xlsx"))
+    dat = readxl::read_excel(paste0(my_opts$zqm_operations_data_folder,"Watercraft Inspection Data/Multiyear data/WatercraftInspectionData_AllYears_Selected_Columns.xlsx"), guess_max = 300000)
   }
 
   #Get Station coordinates, might be unnecessary.
