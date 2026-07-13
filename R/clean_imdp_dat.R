@@ -43,13 +43,11 @@ clean_imdp_dat = function(dat, my_opts, abbrev, verbose){
     dplyr::mutate(Destination_Waterbody_1_Name = stringr::str_to_title(Destination_Waterbody_1_Name))
 
   dat = dat |>
-    tidyr::pivot_longer(cols = c("Destination_Waterbody_1_Name",
-                          "Destination_Waterbody_2_Name",
-                          "Destination_Waterbody_3_Name")) |>
-    dplyr::mutate(value = stringr::str_remove(value, ", Bc")) |>
-    dplyr::mutate(value = stringr::str_to_title(value)) |>
-    tidyr::pivot_wider(names_from = name, values_from = value) |>
-    dplyr::arrange(desc(Year),Watercraft_Risk_Assessment_ID)
+    dplyr::mutate(dplyr::across(
+      c(Destination_Waterbody_1_Name, Destination_Waterbody_2_Name, Destination_Waterbody_3_Name),
+      ~ stringr::str_remove(.x, ", Bc") |> stringr::str_to_title()
+    )) |>
+    dplyr::arrange(desc(Year), Watercraft_Risk_Assessment_ID)
 
   #Homogenize station name spellings.
   dat = dat |>
