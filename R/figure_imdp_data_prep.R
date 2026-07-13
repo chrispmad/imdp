@@ -448,12 +448,22 @@ figure_imdp_data_prep = function(
   setwd(paste0(my_opts$zqm_figure_local_folder,'data/'))
 
   # Output data that will be used to make figures.
-  openxlsx::write.xlsx(dat_this_year, "./figure_dat.xlsx", overwrite = T)
-  openxlsx::write.xlsx(dat, "./figure_dat_all.xlsx", overwrite = T)
-  openxlsx::write.xlsx(dat_hr, "./figure_dat_hr.xlsx", overwrite = T)
-  openxlsx::write.xlsx(dat_mf, "./figure_dat_mf.xlsx", overwrite = T)
+  write_xlsx <- function(data, file) {
+    if (file.exists(file)) file.remove(file)
+    openxlsx::write.xlsx(data, file)
+  }
 
-  readr::write_csv(dat, "./figure_dat_all.csv")
+  write_csv <- function(data, file) {
+    if (file.exists(file)) file.remove(file)
+    readr::write_csv(data, file)
+  }
+
+  write_xlsx(dat_this_year, "./figure_dat.xlsx")
+  write_xlsx(dat, "./figure_dat_all.xlsx")
+  write_xlsx(dat_hr, "./figure_dat_hr.xlsx")
+  write_xlsx(dat_mf, "./figure_dat_mf.xlsx")
+
+  write_csv(dat, "./figure_dat_all.csv")
 
   # Reset working directory.
   setwd(original_wd)
