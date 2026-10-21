@@ -3,7 +3,6 @@ align_mf_metabase_records = function(dat,my_opts){
   # Read in MF sheets for metabase data. Currently only looks at data sheets
   # from 2020, 2021, and 2022. If we want to check 2023 onwards, will need
   # to add those sheets...
-  browser()
   dat20_mf = readxl::read_xlsx(paste0(my_opts$zqm_operations_data_folder,
                               "Watercraft Inspection Data/2020 data/Mussel Fouled boats filtered from raw flat file.xlsx")) |>
     dplyr::slice(1:16) |>
